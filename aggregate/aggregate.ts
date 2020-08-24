@@ -14,18 +14,25 @@ interface Options extends Omit<DataSet, 'playTime'> {
 const select = (data: DataSet[], options: Options): DataSet[] => {
     const filteredDataById = data.filter(filerById(options));
     const filteredDataByAuto = filteredDataById.filter(filerByAuto(options));
+    const filteredDataByMinPlayTime = filteredDataByAuto.filter(filerByMinPlayTime(options));
 
     return data;
 }
 
 function filerById({ id }: Options) {
     return function (data: DataSet) {
-        return data.id === id;
+        return (data.id === id);
     };
-};
+}
 
 function filerByAuto({ auto }: Options) {
     return function (data: DataSet) {
-        return data.auto === auto;
+        return (data.auto === auto);
+    };
+}
+
+function filerByMinPlayTime({ minPlayTime }: Options) {
+    return function (data: DataSet) {
+        return (data.playTime >= minPlayTime);
     };
 }
