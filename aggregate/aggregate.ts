@@ -15,8 +15,8 @@ const select = (data: DataSet[], options: Options): DataSet[] => {
     const filteredDataById = data.filter(filerById(options));
     const filteredDataByAuto = filteredDataById.filter(filerByAuto(options));
     const filteredDataByMinPlayTime = filteredDataByAuto.filter(filerByMinPlayTime(options));
-
-    return data;
+    const mergedData = (options.merge) ? mergeDataSet(filteredDataByMinPlayTime) : filteredDataByMinPlayTime;
+    return mergedData;
 }
 
 function filerById({ id }: Options) {
@@ -35,4 +35,17 @@ function filerByMinPlayTime({ minPlayTime }: Options) {
     return function (data: DataSet) {
         return (data.playTime >= minPlayTime);
     };
+}
+
+function mergeDataSet(data: DataSet[]) {
+    const reversedDataSet = data.reverse();
+    const result = [];
+    reversedDataSet.forEach(data => {
+        const found = result.reduce((prev, current) => {
+            return prev || (current.id === data.id);
+        }, false);
+        if (!found) result.push(data);
+        else result[data.id] = result[data.id] + data.playTime;
+    });
+    return result.reverse();
 }
